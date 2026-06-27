@@ -13,7 +13,7 @@ $hash = (Get-FileHash -Path $exePath -Algorithm SHA256).Hash.ToLower()
 
 Write-Host "Hash: $hash"
 
-$url = "https://github.com/llm-supermarket-org/cli-claude45-sonnet-csharp/releases/download/v$Version/cli-claude45-sonnet-csharp-win-x64.exe"
+$url = "https://github.com/llm-supermarket/cli-claude45-sonnet-csharp/releases/download/v$Version/cli-claude45-sonnet-csharp-win-x64.exe"
 
 $manifestPath = Join-Path $PSScriptRoot "cli-claude45-sonnet-csharp.json"
 

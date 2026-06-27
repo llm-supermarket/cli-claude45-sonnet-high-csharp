@@ -3,7 +3,7 @@ param(
     [string]$Version
 )
 
-$repo = "llm-supermarket-org/cli-claude45-sonnet-csharp"
+$repo = "llm-supermarket/cli-claude45-sonnet-csharp"
 $platforms = @("osx-arm64", "osx-x64", "linux-x64")
 $formulaPath = "$PSScriptRoot/Formula/cli-claude45-sonnet-csharp.rb"
 $base = "https://github.com/$repo/releases/download/v$Version"

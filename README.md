@@ -21,14 +21,14 @@ Rclone encryption uses:
 ### Windows (Scoop)
 
 ```bash
-scoop bucket add cli-claude45-sonnet-csharp https://github.com/llm-supermarket-org/cli-claude45-sonnet-csharp
+scoop bucket add cli-claude45-sonnet-csharp https://github.com/llm-supermarket/cli-claude45-sonnet-csharp
 scoop install cli-claude45-sonnet-csharp
 ```
 
 ### macOS / Linux (Homebrew)
 
 ```bash
-brew tap llm-supermarket-org/cli-claude45-sonnet-csharp https://github.com/llm-supermarket-org/cli-claude45-sonnet-csharp
+brew tap llm-supermarket/cli-claude45-sonnet-csharp https://github.com/llm-supermarket/cli-claude45-sonnet-csharp
 brew install cli-claude45-sonnet-csharp
 ```
 
@@ -41,7 +41,7 @@ scoop bucket rm cli-claude45-sonnet-csharp
 
 # Homebrew (macOS/Linux)
 brew uninstall cli-claude45-sonnet-csharp
-brew untap llm-supermarket-org/cli-claude45-sonnet-csharp
+brew untap llm-supermarket/cli-claude45-sonnet-csharp
 ```
 
 ---
