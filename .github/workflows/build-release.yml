@@ -1,0 +1,128 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            ext: .exe
+          - os: ubuntu-latest
+            rid: linux-x64
+            ext: ""
+          - os: macos-13
+            rid: osx-x64
+            ext: ""
+          - os: macos-latest
+            rid: osx-arm64
+            ext: ""
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.x"
+
+      - name: Determine version
+        id: version
+        shell: bash
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Publish
+        shell: bash
+        run: |
+          dotnet publish src/RcloneEncrypt/RcloneEncrypt.csproj \
+            -c Release -r ${{ matrix.rid }} \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:EnableCompressionInSingleFile=true \
+            -p:Version=${{ steps.version.outputs.VERSION }} \
+            -o publish/
+
+      - name: Package binary (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: mv publish/cli-claude45-sonnet-csharp.exe cli-claude45-sonnet-csharp-${{ matrix.rid }}.exe
+
+      - name: Package binary (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          mv publish/cli-claude45-sonnet-csharp cli-claude45-sonnet-csharp-${{ matrix.rid }}
+          tar czf cli-claude45-sonnet-csharp-${{ matrix.rid }}.tar.gz cli-claude45-sonnet-csharp-${{ matrix.rid }}
+
+      - name: Upload artifact (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.rid }}
+          path: cli-claude45-sonnet-csharp-${{ matrix.rid }}.exe
+
+      - name: Upload artifact (Unix)
+        if: matrix.os != 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.rid }}
+          path: cli-claude45-sonnet-csharp-${{ matrix.rid }}.tar.gz
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'tag'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version
+        id: version
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true
+
+      - name: Switch to main branch
+        run: |
+          git checkout main
+          git pull --rebase origin main
+
+      - name: Update Scoop manifest
+        shell: pwsh
+        run: ./updatescoop.ps1 -Version ${{ steps.version.outputs.VERSION }}
+
+      - name: Update Brew formula
+        shell: pwsh
+        run: ./updatebrew.ps1 -Version ${{ steps.version.outputs.VERSION }}
+
+      - name: Commit updated manifests
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update package manifests to ${{ github.ref_name }}"
+          file_pattern: "cli-claude45-sonnet-csharp.json Formula/cli-claude45-sonnet-csharp.rb"
