@@ -1,11 +1,6 @@
 using System.CommandLine;
-using System.Reflection;
 using RcloneEncrypt.Crypto;
 using RcloneEncrypt.Encoders;
-
-var version = typeof(Program).Assembly
-    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
-    ?? "1.0.0";
 
 var rootCommand = new RootCommand("rclone-encrypt-claude45-sonnet: encrypt/decrypt files using rclone's crypt format");
 
@@ -30,14 +25,6 @@ var encodingOption = new Option<string>(
     aliases: ["--filename-encoding"],
     description: "Filename encoding: base32 (default, rclone standard) or base64",
     getDefaultValue: () => "base32");
-
-// --version flag
-var versionOption = new Option<bool>("--version", "Print version and exit");
-rootCommand.AddOption(versionOption);
-rootCommand.SetHandler(showVersion =>
-{
-    if (showVersion) Console.WriteLine($"cli-claude45-sonnet-csharp {version}");
-}, versionOption);
 
 // encrypt command
 var encryptCommand = new Command("encrypt", "Encrypt a file using rclone's crypt format");
