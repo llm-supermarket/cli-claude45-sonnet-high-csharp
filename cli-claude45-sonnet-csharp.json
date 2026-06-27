@@ -1,0 +1,17 @@
+{
+    "homepage": "https://github.com/llm-supermarket-org/cli-claude45-sonnet-csharp",
+    "description": "CLI tool to encrypt and decrypt files using rclone's crypt format",
+    "version": "0.0.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/llm-supermarket-org/cli-claude45-sonnet-csharp/releases/download/v0.0.0/cli-claude45-sonnet-csharp-win-x64.exe",
+            "hash": "placeholder",
+            "bin": [
+                [
+                    "cli-claude45-sonnet-csharp-win-x64.exe",
+                    "cli-claude45-sonnet-csharp"
+                ]
+            ]
+        }
+    }
+}
