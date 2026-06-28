@@ -1,4 +1,4 @@
-# cli-claude45-sonnet-csharp
+# cli-claude45-sonnet-high-csharp
 
 A small CLI tool that encrypts and decrypts using the rclone encryption defaults.
 
